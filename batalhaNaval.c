@@ -165,10 +165,119 @@ void posicionar(int tabu[LINHAS][COLUNAS]) {
         tabuleiro(tabu); // Atualiza o tabuleiro após posicionar o navio
     } while (op != 5);
 }
+void especial(int tabu[LINHAS][COLUNAS], int tabu_navios[LINHAS][COLUNAS], int forma[5][5], int linhasForma, int colunasForma, int linhaInicio, int colunaInicio) {
+    int centrol = linhasForma / 2;
+    int centroc = colunasForma / 2;
 
+    for (int i = 0; i < linhasForma; i++) {
+        for (int j = 0; j < colunasForma; j++) {
+            int linhaPos = linhaInicio + i - centrol;
+            int colunaPos = colunaInicio + j - centroc;
+
+            // Verifica se a posição está dentro dos limites do tabuleiro
+            if (linhaPos >= 0 && linhaPos < LINHAS && colunaPos >= 0 && colunaPos < COLUNAS) {
+                // Aplica o especial apenas se a posição na forma for 1 e não houver um navio
+                if (forma[i][j] == 1 && tabu_navios[linhaPos][colunaPos] != NAVIO) {
+                    tabu_navios[linhaPos][colunaPos] = 1; // Marca como atingido
+                }
+            }
+        }
+    }
+}
+
+int cruz[5][5] = {
+    {0, 0, 1, 0, 0},
+    {1, 1, 1, 1, 1},
+    {0, 0, 1, 0, 0},
+    {0, 0, 1, 0, 0},
+    {0, 0, 0, 0, 0}
+};
+
+int cone[5][5] = {
+    {0, 0, 1, 0, 0},
+    {0, 1, 1, 1, 0},
+    {1, 1, 1, 1, 1},
+    {0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0}
+};
+
+int octaedro[5][5] = {
+    {0, 0, 1, 0, 0},
+    {0, 1, 1, 1, 0},
+    {1, 1, 1, 1, 1},
+    {0, 1, 1, 1, 0},
+    {0, 0, 1, 0, 0}
+};
+
+void jogar_especiais(int tabu[LINHAS][COLUNAS], int tabu_navios[LINHAS][COLUNAS]) {
+    int linha_barco, coluna_barco, escolha;
+    char continuar;
+
+    do {
+        printf("Escolha o especial:\n");
+        printf("1. Cruz\n");
+        printf("2. Cone\n");
+        printf("3. Octaedro\n");
+        printf("4. Voltar\n");
+        scanf("%d", &escolha);
+
+        if (escolha == 4) break; // Voltar ao menu anterior
+
+        printf("Digite a linha que irá atacar (0 a 9):\n");
+        scanf("%d", &linha_barco);
+        printf("Digite a coluna que irá atacar (0 a 9):\n");
+        scanf("%d", &coluna_barco);
+
+        if (linha_barco >= 0 && linha_barco < LINHAS && coluna_barco >= 0 && coluna_barco < COLUNAS) {
+            if (tabu_navios[linha_barco][coluna_barco] == NAVIO) {
+                printf("Você acertou um navio com o especial!\n");
+                tabu_navios[linha_barco][coluna_barco] = 3; // Marca a posição atingida com 3
+            } else {
+                printf("Água!\n");
+                tabu_navios[linha_barco][coluna_barco] = 1; // Marca como água
+            }
+
+            switch (escolha) {
+                case 1:
+                    especial(tabu, tabu_navios, cruz, 5, 5, linha_barco, coluna_barco);
+                    break;
+                case 2:
+                    especial(tabu, tabu_navios, cone, 5, 5, linha_barco, coluna_barco);
+                    break;
+                case 3:
+                    especial(tabu, tabu_navios, octaedro, 5, 5, linha_barco, coluna_barco);
+                    break;
+                default:
+                    printf("Opção inválida\n");
+                    break;
+            }
+
+            printf("Especial aplicado!\n");
+        } else {
+            printf("Coordenadas inválidas :( \n");
+        }
+
+        tabuleiro(tabu); // Atualiza o tabuleiro principal
+        tabuleiro(tabu_navios); // Mostra o tabuleiro de navios atualizado
+
+        printf("Gostaria de jogar outro especial? (s/n): ");
+        scanf(" %c", &continuar);
+    } while (continuar == 's' || continuar == 'S');
+}
+
+void tabuagua_navios(int tabu_navios[LINHAS][COLUNAS]) {
+    for (int i = 0; i < LINHAS; i++) {
+        for (int j = 0; j < COLUNAS; j++) {
+            tabu_navios[i][j] = AGUA; // Inicializa o tabuleiro de navios com água
+        }
+    }
+}
 int main() {
     printf("Bem vindo ao Batalha naval\n");
     int play;
+    int op_atk;
+    
+    int linha_atk, coluna_atk;
     int tabu[LINHAS][COLUNAS];
     int tabu_navios[LINHAS][COLUNAS]; // Tabuleiro para posicionar os navios
     tabuagua(tabu);
@@ -184,15 +293,49 @@ int main() {
                 posicionar(tabu);
                 break;
             case 2:
-                printf("Função de ataque ainda não implementada.\n");
+            do
+            {
+            printf("1. Usar bomba\n");
+            printf("2. Usar especiais\n");
+            printf("3. Voltar\n");
+            scanf(" %d", &op_atk);
+            if (op_atk == 3) break;
+             switch (op_atk)
+             {
+             case 1:
+             printf("Digite a linha que deseja atacar (0 a 9):\n");
+             scanf("%d", &linha_atk);
+             printf("Digite a coluna que deseja atacar (0 a 9):\n");
+             scanf("%d", &coluna_atk);
+             if (linha_atk >= 0 && linha_atk < LINHAS && coluna_atk >= 0 && coluna_atk < COLUNAS) {
+                 if (tabu_navios[linha_atk][coluna_atk] == NAVIO) {
+                     printf("Acertou um barco!\n");
+                     tabu_navios[linha_atk][coluna_atk] = 3; 
+                 } else {
+                     printf("Água!\n");
+                     tabu_navios[linha_atk][coluna_atk] = 1;
+                 }
+                 tabuleiro(tabu_navios); // Atualiza o tabuleiro de navios
+             } else {
+                 printf("Coordenadas inválidas\n");
+             }
+                break;
+                case 2:
+                jogar_especiais(tabu, tabu_navios); // Passa os dois tabuleiros
+                break;
+             default:
+                break;
+             }
+            } while (op_atk != 3);
                 break;
             case 3:
                 printf("Obrigado por jogar!\n");
                 break;
             default:
-                printf("Opção inválida. Tente novamente.\n");
+                printf("Opção inválida.\n");
                 break;
         }
     } while (play != 3);
     return 0;
 }
+      
