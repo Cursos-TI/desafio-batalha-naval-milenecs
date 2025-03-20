@@ -251,15 +251,12 @@ void jogar_especiais(int tabu[LINHAS][COLUNAS], int tabu_navios[LINHAS][COLUNAS]
                     printf("Opção inválida\n");
                     break;
             }
-
             printf("Especial aplicado!\n");
         } else {
             printf("Coordenadas inválidas :( \n");
         }
-
         tabuleiro(tabu); // Atualiza o tabuleiro principal
-        tabuleiro(tabu_navios); // Mostra o tabuleiro de navios atualizado
-
+        tabuleiro(tabu_navios);
         printf("Gostaria de jogar outro especial? (s/n): ");
         scanf(" %c", &continuar);
     } while (continuar == 's' || continuar == 'S');
